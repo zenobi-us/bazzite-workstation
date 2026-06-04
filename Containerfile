@@ -1,5 +1,5 @@
 # Allow build scripts to be referenced without being copied into the final image
-FROM scratch AS ctx
+FROM ghcr.io/ublue-os/bazzite-gnome-nvidia-open:stable AS ctx
 COPY build_files /
 
 # Base Image
