@@ -20,6 +20,11 @@ set -ouex pipefail
 # Disable COPRs so they don't end up enabled on the final image:
 # dnf5 -y copr disable ublue-os/staging
 
+export APPLICATIONS_DIR=/usr/local/applications
+mkdir -p "$APPLICATIONS_DIR"
+
 ./build.d/mise.sh
 ./build.d/podman.sh
 ./build.d/zerotier.sh
+./build.d/unsloth-studio.sh
+
