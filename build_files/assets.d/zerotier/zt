@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# ensure the user can run sudo commands
+if ! sudo -v &>/dev/null; then
+    echo "Error: This script requires sudo privileges." >&2
+    exit 1
+fi
+
+# Fix: Corrected parameter expansion syntax
+TOKEN_PATH="${ZEROTIER_TOKEN_PATH:-/var/lib/zerotier-one/token}"
+
+function join() {
+    local id="$1"
+
+    if [ -z "$id" ]; then
+        echo "Error: ZeroTier Network ID is required." >&2
+        echo "Usage: zt join <network_id>" >&2
+        exit 1
+    fi
+
+    sudo zerotier-one join "$id"
+}
+
+# Enable / Update a zerotier network domain tld
+# Usage: $ zt tld abc123 beyond.corp
+function tld() {
+    local id="$1"
+    local tld="$2"
+
+    if [ -z "$id" ] || [ -z "$tld" ]; then
+        echo "Error: ZeroTier Network ID and TLD domain are required." >&2
+        echo "Usage: zt tld <network_id> <tld>" >&2
+        exit 1
+    fi
+
+    sudo zeronsd supervise -t "$TOKEN_PATH" -w -d "$tld" "$id"
+    sudo systemctl daemon-reload
+    sudo systemctl enable --now "zeronsd-$id"
+}
+
+# How to use the token command now:
+#
+# Via stdin (Pipe):
+#   echo "my-secret-token" | ./script.sh token
+#
+# Via stdin (Redirect):
+#   ./script.sh token < /path/to/my/token.txt
+#
+# Via Argument:
+#   ./script.sh token /path/to/my/token.txt
+#
+function token() {
+    # If no files are passed, cat automatically streams from stdin.
+    # tee writes to the file, and > /dev/null keeps the terminal clean.
+    cat "$@" | sudo tee "$TOKEN_PATH" > /dev/null
+    echo "Token successfully saved to $TOKEN_PATH"
+}
+
+case "$1" in
+  "join")
+    join "${@:2}"
+    ;;
+  "token")
+    token "${@:2}"
+    ;;
+  "tld")
+    tld "${@:2}"
+    ;;
+  *)
+    echo "Usage: $0 {join|token|tld} [args...]"
+    exit 1
+    ;;
+esac
