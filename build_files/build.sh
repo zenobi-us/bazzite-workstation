@@ -2,7 +2,7 @@
 
 set -ouex pipefail
 
-
+cd "$(dirname "${BASH_SOURCE[0]}")"
 ### Install packages
 
 # Packages can be installed from any enabled yum repo on the image.
@@ -20,11 +20,11 @@ set -ouex pipefail
 # Disable COPRs so they don't end up enabled on the final image:
 # dnf5 -y copr disable ublue-os/staging
 
-export APPLICATIONS_DIR=/usr/local/applications
+export APPLICATIONS_DIR=/var/opt
 mkdir -p "$APPLICATIONS_DIR"
 
-./build.d/mise.sh
-./build.d/podman.sh
-./build.d/zerotier.sh
-./build.d/unsloth-studio.sh
+bash build.d/mise.sh
+bash build.d/podman.sh
+bash build.d/zerotier.sh
+bash build.d/unsloth-studio.sh
 

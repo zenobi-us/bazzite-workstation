@@ -6,6 +6,7 @@ set -ouex pipefail
 # =============================================
 
 APP_DIR="${APPLICATIONS_DIR:-/var/opt}/unsloth"
+UNSLOTH_HOME="${APPLICATIONS_DIR:-/var/opt}/unsloth-home"
 SERVICE_NAME="unsloth-studio"
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}.service"
 
@@ -29,6 +30,8 @@ function install_dependencies() {
 }
 
 function install_unsloth() {
+    export HOME="$UNSLOTH_HOME"
+    mkdir -p "$HOME"
     echo "Cloning / updating Unsloth repository at $APP_DIR..."
     if [ -d "$APP_DIR" ]; then
         echo "Directory exists → pulling latest..."
@@ -40,12 +43,13 @@ function install_unsloth() {
 
     echo "Running Unsloth local installation..."
     ./install.sh --local
+    chown -R root:root "$APP_DIR" "$UNSLOTH_HOME"
 }
 
 function create_systemd_service() {
     echo "Creating systemd service..."
 
-    cat > "$SERVICE_FILE" << 'EOF'
+    cat > "$SERVICE_FILE" << EOF
 [Unit]
 Description=Unsloth Studio Web UI
 After=network-online.target
@@ -54,19 +58,19 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/var/opt/unsloth
-# Unsloth Studio installs the CLI into the venv. We use the full path for reliability in image builds.
-ExecStart=/root/.unsloth/studio/unsloth_studio/bin/unsloth studio -H 0.0.0.0 -p 8888
+WorkingDirectory=$APP_DIR
+# Unsloth Studio installs the CLI into a HOME-local venv during image build.
+ExecStart=$UNSLOTH_HOME/.unsloth/studio/unsloth_studio/bin/unsloth studio -H 0.0.0.0 -p 8888
 
 Restart=always
 RestartSec=5
-Environment=PATH=/root/.unsloth/studio/unsloth_studio/bin:/usr/local/bin:/usr/bin:/bin
+Environment=HOME=$UNSLOTH_HOME
+Environment=PATH=$UNSLOTH_HOME/.unsloth/studio/unsloth_studio/bin:/usr/bin:/bin
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-    systemctl daemon-reload
     echo "✅ Systemd service created: $SERVICE_NAME"
     echo "   After image boot, run:"
     echo "   systemctl enable --now $SERVICE_NAME"
