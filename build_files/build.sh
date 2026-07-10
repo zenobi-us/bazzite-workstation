@@ -23,6 +23,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 export APPLICATIONS_DIR=/var/opt
 mkdir -p "$APPLICATIONS_DIR"
 
+bash build.d/shell.sh
 bash build.d/mise.sh
 bash build.d/podman.sh
 bash build.d/zerotier.sh
