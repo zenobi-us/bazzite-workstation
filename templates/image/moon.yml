@@ -1,0 +1,29 @@
+id: {{ name }}
+layer: application
+stack: infrastructure
+language: bash
+tags:
+  - bootc-image
+
+dependsOn:
+  - image-common
+
+tasks:
+  build:
+    command: >-
+      podman build --pull=newer
+      --file images/{{ name }}/Containerfile
+      --tag {{ name }}:latest .
+    options:
+      cache: false
+      runFromWorkspaceRoot: true
+    inputs:
+      - "Containerfile"
+      - "build.d/**/*"
+      - "disk/**/*"
+      - "/packages/image-common/**/*"
+
+  lint:
+    command: "shellcheck build.d/*.sh"
+    inputs:
+      - "build.d/*.sh"

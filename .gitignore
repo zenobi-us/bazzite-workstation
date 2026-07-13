@@ -1,4 +1,6 @@
 cosign.key
+.moon/cache/
+.moon/docker/
 _build_*
 output
 _build-*/**

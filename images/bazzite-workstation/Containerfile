@@ -1,0 +1,13 @@
+FROM scratch AS ctx
+COPY packages/image-common /common
+COPY images/bazzite-workstation /image
+
+FROM ghcr.io/ublue-os/bazzite-dx-nvidia-gnome:stable
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/common/build.sh /ctx/image
+
+RUN bootc container lint

@@ -1,0 +1,29 @@
+id: bazzite-workstation
+layer: application
+stack: infrastructure
+language: bash
+tags:
+  - bootc-image
+
+dependsOn:
+  - image-common
+
+tasks:
+  build:
+    command: >-
+      podman build --pull=newer
+      --file images/bazzite-workstation/Containerfile
+      --tag bazzite-workstation:latest .
+    options:
+      cache: false
+      runFromWorkspaceRoot: true
+    inputs:
+      - "Containerfile"
+      - "build.d/**/*"
+      - "disk/**/*"
+      - "/packages/image-common/**/*"
+
+  lint:
+    command: "shellcheck build.d/*.sh"
+    inputs:
+      - "build.d/*.sh"

@@ -1,0 +1,11 @@
+id: image-common
+layer: library
+stack: infrastructure
+language: bash
+
+tasks:
+  lint:
+    command: "shellcheck build.sh build.d/*.sh"
+    inputs:
+      - "build.sh"
+      - "build.d/*.sh"

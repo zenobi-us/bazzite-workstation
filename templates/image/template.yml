@@ -1,0 +1,12 @@
+title: bootc image
+description: Scaffold a bootc image project that reuses image-common.
+destination: images/[name]
+variables:
+  name:
+    type: string
+    required: true
+    prompt: Image project and published image name?
+  base_image:
+    type: string
+    required: true
+    prompt: Base image reference?
