@@ -1,0 +1,13 @@
+[Unit]
+Description=Join ZeroTier network %i and configure its DNS
+Requires=zerotier-one.service
+After=zerotier-one.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/zerotier-join %i
+RemainAfterExit=yes
+
+[Install]
+WantedBy=zerotier-one.service

@@ -13,9 +13,9 @@ gpgkey=https://download.zerotier.com/contact@zerotier.com.gpg
 EOF
 dnf5 -y install zerotier-one
 
-# ZeroTier DNS client integration for systemd-resolved
-install -Dm755 assets.d/zerotier/zerotier-resolved/zerotier-resolved.py /usr/libexec/zerotier-resolved/zerotier-resolved.py
-install -Dm644 assets.d/zerotier/zerotier-resolved/zerotier-resolved@.service /usr/lib/systemd/system/zerotier-resolved@.service
+# Join a configured network and apply its ZeroTier DNS settings after the daemon starts.
+install -Dm755 assets.d/zerotier/zerotier-join /usr/bin/zerotier-join
+install -Dm644 assets.d/zerotier/zerotier-join@.service /usr/lib/systemd/system/zerotier-join@.service
 systemctl enable zerotier-one.service
 rm /etc/yum.repos.d/zerotier.repo
 
