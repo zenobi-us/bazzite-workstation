@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Rebuild a RAW virtual machine image"
+set -euo pipefail
+exec mise run build-raw

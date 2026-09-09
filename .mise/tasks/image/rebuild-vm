@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Rebuild the default QCOW2 VM image"
+set -euo pipefail
+exec mise run rebuild-qcow2 "$@"

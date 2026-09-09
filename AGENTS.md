@@ -11,7 +11,7 @@ Primary files:
 - `Containerfile` — bootc image definition. Base currently derives from `ghcr.io/ublue-os/bazzite-dx-nvidia:stable`.
 - `build_files/build.sh` — main image customization entrypoint called by `Containerfile`.
 - `build_files/build.d/*.sh` — focused build scripts invoked from `build.sh`.
-- `Justfile` — local build, VM, ISO, and utility commands.
+- `mise.toml` and `.mise/tasks/` — monorepo build, VM, ISO, lint, and utility tasks.
 - `.github/workflows/build.yml` — GHCR image build workflow.
 - `.github/workflows/build-disk.yml` — disk image workflow.
 - `disk_config/*.toml` — bootc image builder disk/ISO config.
@@ -37,7 +37,7 @@ Primary files:
 
 Before reporting build-related changes as done, run cheapest relevant validation:
 
-- `just check` for Justfile syntax changes.
+- `mise run check` for mise task and shell syntax changes.
 - `podman build --pull=newer --tag bazzite-workstation:test .` for Containerfile or build script changes, if feasible.
 - Workflow YAML changes SHOULD be reviewed for syntax and env var consistency.
 

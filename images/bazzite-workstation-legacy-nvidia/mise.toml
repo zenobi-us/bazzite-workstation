@@ -1,0 +1,22 @@
+[env]
+IMAGE_NAME = "bazzite-workstation-legacy-nvidia"
+IMAGE_PROJECT = "bazzite-workstation-legacy-nvidia"
+
+[tasks]
+build = { file = "build" }
+lint = { file = "../../.mise/tasks/image/lint" }
+build-disk = { file = "../../.mise/tasks/image/build-disk" }
+build-iso = { file = "../../.mise/tasks/image/build-iso" }
+build-qcow2 = { file = "../../.mise/tasks/image/build-qcow2" }
+build-raw = { file = "../../.mise/tasks/image/build-raw" }
+build-vm = { file = "../../.mise/tasks/image/build-vm" }
+clean = { file = "../../.mise/tasks/image/clean" }
+format = { file = "../../.mise/tasks/image/format" }
+rebuild-iso = { file = "../../.mise/tasks/image/rebuild-iso" }
+rebuild-qcow2 = { file = "../../.mise/tasks/image/rebuild-qcow2" }
+rebuild-raw = { file = "../../.mise/tasks/image/rebuild-raw" }
+rebuild-vm = { file = "../../.mise/tasks/image/rebuild-vm" }
+run-vm = { file = "../../.mise/tasks/image/run-vm" }
+run-vm-iso = { file = "../../.mise/tasks/image/run-vm-iso" }
+run-vm-qcow2 = { file = "../../.mise/tasks/image/run-vm-qcow2" }
+run-vm-raw = { file = "../../.mise/tasks/image/run-vm-raw" }

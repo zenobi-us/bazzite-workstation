@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#MISE description="Build the container image"
+#USAGE flag "--target <target>" help="Image name"
+#USAGE flag "--tag <tag>" help="Image tag" default="latest"
+set -euo pipefail
+
+project="${IMAGE_PROJECT:-bazzite-workstation}"
+target="${usage_target:-${IMAGE_NAME:-$project}}"
+tag="${usage_tag:-latest}"
+root="${MISE_PROJECT_ROOT:-$PWD}"
+podman build --pull=newer \
+  --file "$root/images/$project/Containerfile" \
+  --tag "${target}:${tag}" \
+  "$root"

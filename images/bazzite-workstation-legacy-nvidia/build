@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#MISE description="Build the legacy NVIDIA container image"
+#USAGE flag "--target <target>" help="Image name" default="bazzite-workstation-legacy-nvidia"
+#USAGE flag "--tag <tag>" help="Image tag" default="latest"
+set -euo pipefail
+
+target="${usage_target:-bazzite-workstation-legacy-nvidia}"
+tag="${usage_tag:-latest}"
+podman build --pull=newer \
+  --file "${MISE_PROJECT_ROOT:-$PWD}/images/bazzite-workstation-legacy-nvidia/Containerfile" \
+  --tag "${target}:${tag}" \
+  "${MISE_PROJECT_ROOT:-$PWD}"

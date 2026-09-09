@@ -35,16 +35,16 @@ GP107/Pascal and the matching kernel modules are present.
 From the repository root:
 
 ```bash
-moon run bazzite-workstation-legacy-nvidia:build
-moon run bazzite-workstation-legacy-nvidia:lint
+mise run //images/bazzite-workstation-legacy-nvidia:build
+mise run //images/bazzite-workstation-legacy-nvidia:lint
 ```
 
-Or with Just:
+Or with the root convenience task:
 
 ```bash
 IMAGE_PROJECT=bazzite-workstation-legacy-nvidia \
 IMAGE_NAME=bazzite-workstation-legacy-nvidia \
-just build
+mise run build
 ```
 
 Every build must pass the `bootc container lint` step in the Containerfile.

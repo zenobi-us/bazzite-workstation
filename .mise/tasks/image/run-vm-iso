@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Run the ISO VM image"
+set -euo pipefail
+exec mise run run-vm iso "$@"

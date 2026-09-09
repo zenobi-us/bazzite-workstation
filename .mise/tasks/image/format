@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Format all shell scripts"
+set -euo pipefail
+command -v shfmt >/dev/null || { echo 'shfmt could not be found. Please install it.' >&2; exit 1; }
+find . -iname '*.sh' -type f -not -path './.git/*' -exec shfmt --write '{}' +

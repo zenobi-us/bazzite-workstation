@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#MISE description="Run a bootable image in a QEMU container"
+#USAGE arg "<type>" default="qcow2" help="qcow2, raw, or iso"
+set -euo pipefail
+root="${MISE_PROJECT_ROOT:-$PWD}"
+type="${usage_type:-qcow2}"
+image_file="$root/output/${type}/disk.${type}"
+[[ "$type" == iso ]] && image_file="$root/output/bootiso/install.iso"
+if [[ ! -f "$image_file" ]]; then
+  mise run "build-${type}"
+fi
+port=8006
+while ss -tunalp | grep -q ":${port}"; do port=$((port + 1)); done
+echo "Using Port: ${port}"
+echo "Connect to http://localhost:${port}"
+(sleep 30 && xdg-open "http://localhost:${port}") &
+podman run --rm --privileged --pull=newer \
+  --publish "127.0.0.1:${port}:8006" \
+  --env CPU_CORES=4 --env RAM_SIZE=8G --env DISK_SIZE=64G \
+  --env TPM=Y --env GPU=Y --device=/dev/kvm \
+  --volume "${image_file}:/boot.${type}" docker.io/qemux/qemu

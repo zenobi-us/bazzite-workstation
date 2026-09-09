@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#MISE description="Build a bootable disk image with Bootc Image Builder"
+#USAGE arg "<type>" help="qcow2, raw, or iso"
+#USAGE flag "--image <image>" help="Container image" default="localhost/bazzite-workstation"
+#USAGE flag "--tag <tag>" help="Container tag" default="latest"
+#USAGE flag "--config <config>" help="Disk configuration file"
+set -euo pipefail
+
+type="${usage_type:?image type required}"
+image="${usage_image:-localhost/bazzite-workstation}"
+tag="${usage_tag:-latest}"
+config="${usage_config:-images/${IMAGE_PROJECT}/disk/disk.toml}"
+root="${MISE_PROJECT_ROOT:-$PWD}"
+image="${image}:${tag}"
+mkdir -p "$root/output"
+tmp=$(mktemp -p "$root" -d -t _build-bib.XXXXXXXXXX)
+trap 'rm -rf "$tmp"' EXIT
+
+sudo podman run --rm -it --privileged --pull=newer --net=host \
+  --security-opt label=type:unconfined_t \
+  -v "$root/$config:/config.toml:ro" \
+  -v "$tmp:/output" \
+  -v /var/lib/containers/storage:/var/lib/containers/storage \
+  "${BIB_IMAGE:-quay.io/centos-bootc/bootc-image-builder:latest}" \
+  --type "${type}" --use-librepo=True --rootfs=btrfs "$image"
+
+sudo mv -f "$tmp"/* "$root/output/"
+sudo chown -R "$(id -u):$(id -g)" "$root/output"

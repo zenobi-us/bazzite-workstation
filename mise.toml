@@ -1,0 +1,16 @@
+# Root mise configuration for the image monorepo.
+monorepo_root = true
+
+[env]
+IMAGE_NAME = "{{ get_env(name='IMAGE_NAME', default='bazzite-workstation') }}"
+IMAGE_PROJECT = "{{ get_env(name='IMAGE_PROJECT', default=get_env(name='IMAGE_NAME', default='bazzite-workstation')) }}"
+DEFAULT_TAG = "{{ get_env(name='DEFAULT_TAG', default='latest') }}"
+BIB_IMAGE = "{{ get_env(name='BIB_IMAGE', default='quay.io/centos-bootc/bootc-image-builder:latest') }}"
+
+[monorepo]
+config_roots = ["images/*", "packages/*"]
+
+[tasks]
+"build" = { run = "mise run //images/${IMAGE_PROJECT}:build" }
+"check" = { file = ".mise/tasks/repo/check" }
+"lint" = { run = "mise run //packages/image-common:lint && mise run //images/${IMAGE_PROJECT}:lint" }

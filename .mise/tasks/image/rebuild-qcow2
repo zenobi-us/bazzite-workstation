@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Rebuild a QCOW2 virtual machine image"
+set -euo pipefail
+exec mise run build-qcow2

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Run the QCOW2 VM image"
+set -euo pipefail
+exec mise run run-vm qcow2 "$@"

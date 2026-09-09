@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Run the RAW VM image"
+set -euo pipefail
+exec mise run run-vm raw "$@"

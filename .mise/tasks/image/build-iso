@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Build an ISO virtual machine image"
+#MISE depends=["build"]
+set -euo pipefail
+exec mise run build-disk iso --image "localhost/${IMAGE_NAME}" --tag "${DEFAULT_TAG}" --config "images/${IMAGE_PROJECT}/disk/iso.toml"

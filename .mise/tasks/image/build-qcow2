@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Build a QCOW2 virtual machine image"
+#MISE depends=["build"]
+set -euo pipefail
+exec mise run build-disk qcow2 --image "localhost/${IMAGE_NAME}" --tag "${DEFAULT_TAG}" --config "images/${IMAGE_PROJECT}/disk/disk.toml"

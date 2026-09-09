@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+#MISE description="Validate mise task discovery and shell syntax"
+set -euo pipefail
+mise tasks ls >/dev/null
+find . -iname '*.sh' -type f -not -path './.git/*' -print0 | xargs -0 -r bash -n
+echo 'mise configuration and shell scripts are valid'

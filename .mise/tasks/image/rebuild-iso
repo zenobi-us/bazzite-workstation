@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Rebuild an ISO virtual machine image"
+set -euo pipefail
+exec mise run build-iso

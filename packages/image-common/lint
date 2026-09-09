@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Lint shared shell scripts"
+set -euo pipefail
+cd "${MISE_TASK_DIR:-$(dirname "$0")}/.."
+shellcheck build.sh build.d/*.sh
