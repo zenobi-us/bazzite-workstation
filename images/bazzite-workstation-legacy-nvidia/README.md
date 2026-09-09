@@ -49,6 +49,24 @@ mise run build
 
 Every build must pass the `bootc container lint` step in the Containerfile.
 
+## Deploy with bootc
+
+This is a bootc image. Switch to the published image with:
+
+```bash
+sudo bootc switch --transport registry ghcr.io/zenobi-us/bazzite-workstation-legacy-nvidia:latest
+```
+
+Inspect the staged and active deployments with:
+
+```bash
+bootc status
+```
+
+Reboot after the switch. If the new deployment fails, boot the previous entry
+or run `sudo bootc rollback`. Use `rpm-ostree rebase` only when a compatibility
+workflow requires it; do not use it as the normal deployment command here.
+
 ## Validation after booting the image
 
 After installing or switching to the image, confirm that the laptop's

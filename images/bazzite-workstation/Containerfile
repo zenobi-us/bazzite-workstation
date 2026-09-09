@@ -2,7 +2,9 @@ FROM scratch AS ctx
 COPY packages/image-common /common
 COPY images/bazzite-workstation /image
 
-FROM ghcr.io/ublue-os/bazzite-dx-nvidia-gnome:stable
+# Reuse the published proprietary NVIDIA base so Pascal/GP107 hardware gets
+# the legacy-compatible driver stack before applying shared workstation layers.
+FROM ghcr.io/zenobi-us/bazzite-workstation-legacy-nvidia:latest
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \

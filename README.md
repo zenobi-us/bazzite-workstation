@@ -41,6 +41,23 @@ IMAGE_NAME=bazzite-workstation-legacy-nvidia mise run build
 
 Podman builds use repository root as context so each Containerfile can copy its image project and `packages/image-common`.
 
+## Bootc deployment
+
+These images are bootc container images. Use bootc commands for host deployment
+and inspection:
+
+```bash
+sudo bootc switch --transport registry ghcr.io/zenobi-us/bazzite-workstation:latest
+bootc status
+sudo bootc rollback
+```
+
+`bootc switch` stages a new image deployment. Reboot to boot into it. Use
+`bootc status` before and after a switch. Use `bootc rollback` when the new
+deployment does not work. Use `rpm-ostree rebase` only for systems that still
+require the rpm-ostree compatibility workflow; it is not the default for these
+bootc images.
+
 ## Available images
 
 - `bazzite-workstation` — the standard customized workstation image.
