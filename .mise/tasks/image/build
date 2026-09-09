@@ -7,7 +7,7 @@ set -euo pipefail
 project="${IMAGE_PROJECT:-bazzite-workstation}"
 target="${usage_target:-${IMAGE_NAME:-$project}}"
 tag="${usage_tag:-latest}"
-root="${MISE_PROJECT_ROOT:-$PWD}"
+root="$(git -C "${MISE_PROJECT_ROOT:-$PWD}" rev-parse --show-toplevel)"
 podman build --pull=newer \
   --file "$root/images/$project/Containerfile" \
   --tag "${target}:${tag}" \

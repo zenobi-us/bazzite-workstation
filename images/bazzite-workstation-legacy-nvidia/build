@@ -6,7 +6,8 @@ set -euo pipefail
 
 target="${usage_target:-bazzite-workstation-legacy-nvidia}"
 tag="${usage_tag:-latest}"
+root="$(git -C "${MISE_PROJECT_ROOT:-$PWD}" rev-parse --show-toplevel)"
 podman build --pull=newer \
-  --file "${MISE_PROJECT_ROOT:-$PWD}/images/bazzite-workstation-legacy-nvidia/Containerfile" \
+  --file "$root/images/bazzite-workstation-legacy-nvidia/Containerfile" \
   --tag "${target}:${tag}" \
-  "${MISE_PROJECT_ROOT:-$PWD}"
+  "$root"
