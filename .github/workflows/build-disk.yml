@@ -44,6 +44,10 @@ jobs:
             name: bazzite-workstation
             disk-config: images/bazzite-workstation/disk/disk.toml
             iso-config: images/bazzite-workstation/disk/iso.toml
+          - id: bazzite-workstation-legacy-nvidia
+            name: bazzite-workstation-legacy-nvidia
+            disk-config: images/bazzite-workstation-legacy-nvidia/disk/disk.toml
+            iso-config: images/bazzite-workstation-legacy-nvidia/disk/iso.toml
         disk-type: ["qcow2", "anaconda-iso"]
     permissions:
       contents: read

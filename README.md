@@ -33,6 +33,14 @@ Select another project with environment variables:
 IMAGE_PROJECT=my-image IMAGE_NAME=my-image just build
 ```
 
+## Available images
+
+- `bazzite-workstation` — the standard customized workstation image.
+- `bazzite-workstation-legacy-nvidia` — a proprietary NVIDIA variant intended
+  for legacy Pascal/GP107 hardware. See its
+  [`README.md`](images/bazzite-workstation-legacy-nvidia/README.md) for driver
+  checks and post-boot validation.
+
 ## Add an image
 
 ```bash

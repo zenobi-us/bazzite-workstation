@@ -1,0 +1,16 @@
+FROM scratch AS ctx
+COPY packages/image-common /common
+COPY images/bazzite-workstation-legacy-nvidia /image
+
+# Use Bazzite's proprietary NVIDIA image rather than the NVIDIA Open variant.
+# GP107/Pascal compatibility must be verified against the driver packages in
+# the resolved stable image before deploying this image to the laptop.
+FROM ghcr.io/ublue-os/bazzite-gnome-nvidia:stable
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/common/build.sh /ctx/image
+
+RUN bootc container lint

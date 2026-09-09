@@ -36,6 +36,9 @@ jobs:
           - id: bazzite-workstation
             name: bazzite-workstation
             containerfile: images/bazzite-workstation/Containerfile
+          - id: bazzite-workstation-legacy-nvidia
+            name: bazzite-workstation-legacy-nvidia
+            containerfile: images/bazzite-workstation-legacy-nvidia/Containerfile
 
     permissions:
       contents: read
