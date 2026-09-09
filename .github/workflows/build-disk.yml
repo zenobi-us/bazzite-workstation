@@ -33,21 +33,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  prepare:
+    name: Generate disk image matrix
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      image: ${{ steps.matrix.outputs.image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Generate disk image matrix
+        id: matrix
+        run: echo "image=$(.mise/tasks/repo/matrix-disk-image)" >> "$GITHUB_OUTPUT"
+
   build:
+    needs: prepare
     name: Build ${{ matrix.image.name }} ${{ matrix.disk-type }}
     runs-on: ${{ inputs.platform == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
     strategy:
       fail-fast: false
       matrix:
-        image:
-          - id: bazzite-workstation
-            name: bazzite-workstation
-            disk-config: images/bazzite-workstation/disk/disk.toml
-            iso-config: images/bazzite-workstation/disk/iso.toml
-          - id: bazzite-workstation-legacy-nvidia
-            name: bazzite-workstation-legacy-nvidia
-            disk-config: images/bazzite-workstation-legacy-nvidia/disk/disk.toml
-            iso-config: images/bazzite-workstation-legacy-nvidia/disk/iso.toml
+        image: ${{ fromJSON(needs.prepare.outputs.image) }}
         disk-type: ["qcow2", "anaconda-iso"]
     permissions:
       contents: read

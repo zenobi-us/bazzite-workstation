@@ -25,20 +25,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  prepare:
+    name: Generate image matrix
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      image: ${{ steps.matrix.outputs.image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Generate image matrix
+        id: matrix
+        run: echo "image=$(.mise/tasks/repo/matrix-image)" >> "$GITHUB_OUTPUT"
+
   build_push:
+    needs: prepare
     name: Build and push ${{ matrix.image.name }}
     runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
       matrix:
-        image:
-          - id: bazzite-workstation
-            name: bazzite-workstation
-            containerfile: images/bazzite-workstation/Containerfile
-          - id: bazzite-workstation-legacy-nvidia
-            name: bazzite-workstation-legacy-nvidia
-            containerfile: images/bazzite-workstation-legacy-nvidia/Containerfile
+        image: ${{ fromJSON(needs.prepare.outputs.image) }}
 
     permissions:
       contents: read

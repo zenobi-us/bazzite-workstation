@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#MISE description="Render image definitions as compact JSON for CI matrices"
+set -euo pipefail
+
+root="${MISE_PROJECT_ROOT:-$PWD}"
+command -v jq >/dev/null || {
+  echo 'jq could not be found. Please install it.' >&2
+  exit 1
+}
+
+entries=()
+for containerfile in "$root"/images/*/Containerfile; do
+  [[ -f "$containerfile" ]] || continue
+
+  image_dir="${containerfile%/Containerfile}"
+  image_id="${image_dir##*/}"
+  relative_containerfile="${containerfile#"$root"/}"
+  entries+=(
+    "$(jq -cn \
+      --arg id "$image_id" \
+      --arg name "$image_id" \
+      --arg containerfile "$relative_containerfile" \
+      '{id: $id, name: $name, containerfile: $containerfile}')"
+  )
+done
+
+if ((${#entries[@]} == 0)); then
+  echo "no image Containerfiles found under $root/images" >&2
+  exit 1
+fi
+
+printf '%s\n' "${entries[@]}" | jq -sc '.'

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#MISE description="Render disk image definitions as compact JSON for CI matrices"
+set -euo pipefail
+
+root="${MISE_PROJECT_ROOT:-$PWD}"
+command -v jq >/dev/null || {
+  echo 'jq could not be found. Please install it.' >&2
+  exit 1
+}
+
+entries=()
+for disk_config in "$root"/images/*/disk/disk.toml; do
+  [[ -f "$disk_config" ]] || continue
+
+  image_dir="${disk_config%/disk/disk.toml}"
+  image_id="${image_dir##*/}"
+  iso_config="${disk_config%disk.toml}iso.toml"
+  if [[ ! -f "$iso_config" ]]; then
+    echo "missing ISO configuration for $image_id: ${iso_config#"$root"/}" >&2
+    exit 1
+  fi
+
+  entries+=(
+    "$(jq -cn \
+      --arg id "$image_id" \
+      --arg name "$image_id" \
+      --arg disk_config "${disk_config#"$root"/}" \
+      --arg iso_config "${iso_config#"$root"/}" \
+      '{id: $id, name: $name, "disk-config": $disk_config, "iso-config": $iso_config}')"
+  )
+done
+
+if ((${#entries[@]} == 0)); then
+  echo "no disk image configurations found under $root/images" >&2
+  exit 1
+fi
+
+printf '%s\n' "${entries[@]}" | jq -sc '.'
