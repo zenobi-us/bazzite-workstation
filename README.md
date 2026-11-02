@@ -83,3 +83,57 @@ Every image Containerfile must retain `RUN bootc container lint`.
 ## Signing
 
 Keep `cosign.key` local and ignored. Store private key in GitHub Actions secret `SIGNING_SECRET`; commit only `cosign.pub`.
+
+## Testing image
+
+`bazzite-workstation-testing` is a separate Fedora 45 NVIDIA GNOME image.
+It follows `ghcr.io/ublue-os/bazzite-gnome-nvidia:testing-45`; the stable image keeps its existing base.
+The testing image reuses `packages/image-common`, including the shared workstation scripts.
+It does not inherit the upstream DX developer tool bundle.
+
+Build and lint the testing project:
+
+```bash
+mise run //images/bazzite-workstation-testing:lint
+mise run //images/bazzite-workstation-testing:build
+```
+
+The container workflow publishes it separately as `ghcr.io/zenobi-us/bazzite-workstation-testing:latest`.
+Disk builds use its own installer target, artifact names, and S3 prefix.
+The existing stable image and installer target remain unchanged.
+
+After the workflow publishes the image, switch an existing workstation:
+
+```bash
+sudo bootc switch --transport registry ghcr.io/zenobi-us/bazzite-workstation-testing:latest
+systemctl reboot
+```
+
+Testing updates can break graphics, login, or other desktop features. Keep a working rollback deployment.
+To return to the previous deployment, run `sudo bootc rollback` and reboot.
+To select the stable image explicitly, run `sudo bootc switch --transport registry ghcr.io/zenobi-us/bazzite-workstation:latest` and reboot.
+
+### Deskflow clipboard support
+
+The image build requires GNOME Shell, Mutter, and the GNOME portal to be version 51 or newer.
+The Fedora 45 base supplies the coordinated compositor and portal changes that GNOME 50 lacks.
+See the [GNOME portal 51 implementation](https://github.com/GNOME/xdg-desktop-portal-gnome/blob/51.0/src/inputcapture.c).
+
+After booting the testing image, check the active portal:
+
+```bash
+gdbus call --session \
+  --dest org.freedesktop.portal.Desktop \
+  --object-path /org/freedesktop/portal/desktop \
+  --method org.freedesktop.DBus.Properties.Get \
+  org.freedesktop.portal.InputCapture version
+```
+
+Expect version 2 or higher; upstream GNOME portal 51 advertises version 3.
+Restart Deskflow, approve clipboard access if prompted, and test text copy/paste in both directions.
+An image build cannot verify clipboard transfer in a live GNOME session.
+
+The shared scripts install `zsh` explicitly before selecting it as the default shell.
+The full build passes `bootc container lint` with warnings from the existing customizations: `/run/dnf`, the ZeroTier account, and files under `/var`.
+In particular, application files baked into `/var` do not replace existing deployment state automatically.
+Review these warnings before deployment; this variant does not change the shared application storage layout.

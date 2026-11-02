@@ -1,0 +1,21 @@
+FROM scratch AS ctx
+COPY packages/image-common /common
+COPY images/bazzite-workstation-testing /image
+
+FROM ghcr.io/ublue-os/bazzite-gnome-nvidia:testing-45
+
+LABEL io.artifacthub.package.prerelease="true"
+
+# Deskflow server clipboard sharing needs both portal and compositor support.
+RUN for package in gnome-shell mutter xdg-desktop-portal-gnome; do \
+        version="$(rpm -q --queryformat '%{VERSION}' "$package")" || exit 1; \
+        test "${version%%.*}" -ge 51 || exit 1; \
+    done
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/common/build.sh /ctx/image
+
+RUN bootc container lint

@@ -109,6 +109,7 @@ jobs:
         if: inputs.upload-to-s3 != true && github.event_name != 'pull_request'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
+          name: ${{ matrix.image.name }}-${{ matrix.disk-type }}-${{ inputs.platform || 'amd64' }}
           path: ${{ steps.build.outputs.output-directory }}
           if-no-files-found: error
           retention-days: 0
@@ -126,7 +127,8 @@ jobs:
           RCLONE_CONFIG_S3_REGION: ${{ secrets.S3_REGION }}
           RCLONE_CONFIG_S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
           SOURCE_DIR: ${{ steps.build.outputs.output-directory }}
+          S3_PREFIX: ${{ matrix.image.id == 'bazzite-workstation-testing' && 'bazzite-workstation-testing/' || '' }}
         run: |
           sudo apt-get update
           sudo apt-get install -y rclone
-          rclone copy $SOURCE_DIR S3:${{ secrets.S3_BUCKET_NAME }}
+          rclone copy "$SOURCE_DIR" "S3:${{ secrets.S3_BUCKET_NAME }}/${S3_PREFIX}"

@@ -2,7 +2,7 @@
 #MISE description="Lint image-specific shell scripts"
 set -euo pipefail
 
-root="${MISE_PROJECT_ROOT:-$PWD}"
+root="$(git -C "${MISE_PROJECT_ROOT:-$PWD}" rev-parse --show-toplevel)"
 project="${IMAGE_PROJECT:-bazzite-workstation}"
 cd "$root/images/$project"
 if compgen -G 'build.d/*.sh' >/dev/null; then shellcheck build.d/*.sh; fi
